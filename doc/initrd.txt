@@ -271,16 +271,8 @@ Resources
 The bzImage+initrd patch (bzImage is an extension to load kernels directly
 above 1 MB, which allows kernels sizes of up to approximately 2 MB) can be
 found at
-ftp://lrcftp.epfl.ch/pub/people/almesber/lilo/bzImage+initrd-1.3.71.patch.gz
-and
-ftp://elserv.ffm.fgan.de/pub/linux/loadlin-1.6/bzImage+initrd-1.3.71.patch.gz
-
-A preliminary version of LOADLIN 1.6 is available on
-ftp://elserv.ffm.fgan.de/pub/linux/loadlin-1.6/loadlin-1.6-pre8-bin.tgz
-
-A preliminary version of LILO 18 is available on
-ftp://lrcftp.epfl.ch/pub/people/almesber/lilo/lilo.18dev3.tar.gz
+http://youpibouh.thefreecat.org/loadlin/bzImage+initrd-1.3.72.patch.gz
 
 A very simple example for building an image for initrd, also including
 the program 'freeramdisk', can be found on
-ftp://elserv.ffm.fgan.de/pub/linux/loadlin-1.6/initrd-example.tgz
+http://youpibouh.thefreecat.org/loadlin/initrd-example.tgz
