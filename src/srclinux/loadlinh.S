@@ -7,9 +7,6 @@
 .text
 
 #define __ASSEMBLY__
-#include <linux/config.h>
-#include <linux/linkage.h>
-#include <asm/segment.h>
 
 #define OUR_STACK 0xa0000   /* this stack is top of 640Kb */
 
@@ -42,7 +39,7 @@ startup_32:
 /*
  * Do the page adjustment, and jump to the kernel decompressor..
  */
-	call SYMBOL_NAME(page_adjustment)
+	call page_adjustment
 	xorl %ebx,%ebx
 #	ljmp $(KERNEL_CS), $0x1000
 	jmp  *%eax

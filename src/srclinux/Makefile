@@ -6,14 +6,10 @@ SYS_SIZE = -DSYS_SIZE=0xFFFF
 
 OBJECTS = $(HEAD) pgadjust.o
 
-CFLAGS = -D__KERNEL__ -m386 -Os -DSTDC_HEADERS -fomit-frame-pointer \
-         -fno-strength-reduce -fno-force-mem
+CFLAGS = -D__KERNEL__ -march=i386 -Os -DSTDC_HEADERS -fomit-frame-pointer \
+         -fno-strength-reduce
 
-ifneq (1,$(shell if grep __ELF__ `gcc -v 2>&1|head -n1|cut -d' ' -f4` 1>/dev/null 2>&1;then echo -n 1;fi))
-  @echo ""; \
-   echo "needing ELF development tools, giving up";
-  exit 1;
-endif
+CC=gcc -m32
 
 all: ../pgadjust.asm Makefile
 #all: testpg Makefile

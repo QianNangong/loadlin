@@ -114,7 +114,7 @@ __OUT(b,"b",char)
 
 	/* ---- end of outb_p ----- */
 
-static void puts(const char *);
+static int puts(const char *);
 static void * memcpy(void * __dest, void * __src,
 			    unsigned int __n);
   
@@ -131,7 +131,7 @@ static void scroll()
 		vidmem[i] = ' ';
 }
 
-static void puts(const char *s)
+static int puts(const char *s)
 {
 	int x,y,pos;
 	char c;
@@ -166,6 +166,8 @@ static void puts(const char *s)
 	outb_p(0xff & (pos >> 9), vidport+1);
 	outb_p(15, vidport);
 	outb_p(0xff & (pos >> 1), vidport+1);
+
+	return 0;
 }
 
 static void * memcpy(void * __dest, void * __src,
