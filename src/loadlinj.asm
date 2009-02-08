@@ -733,7 +733,9 @@ print_verbose proc near
          call     print
 @@m1:
          @@print  @@t2
-         @@hexw   kernel_size
+;         @@hexw   kernel_size
+	 mov      eax,kernel_size
+	 call     writehexdword
          cmp      have_big_kernel,0
          jz       @@m1_1
          @@print  @@t2_big
@@ -868,8 +870,9 @@ print_verbose proc near
          @@print  @@w1
 @@6:
 
-         movzx    eax,kernel_size
-         shl      eax,4
+;         movzx    eax,kernel_size
+;         shl      eax,4
+         mov      eax,kernel_size
          cmp      eax,load_buffer_size
          jb       @@7
          @@print  @@w2
@@ -890,8 +893,10 @@ print_verbose proc near
          db         13,10,'  image file:       $'
 @@t1_    db         13,10,'  kernel version    $'
 @@t2     db         13,10,'  kernel size:     0x$'
-@@t2_    db               '0                  setup size:  0x$'
-@@t2_big db               '0 (high loaded)    setup size:  0x$'
+;@@t2_    db               '0                  setup size:  0x$'
+;@@t2_big db               '0 (high loaded)    setup size:  0x$'
+@@t2_    db               '               setup size:  0x$'
+@@t2_big db               ' (high loaded) setup size:  0x$'
 @@t2_heap db                                                  ', heap: 0x$'
 
 IF 0
@@ -1017,7 +1022,7 @@ logo_tx               label byte
 IFDEF ALPHA
   INCLUDE LOADLINA.ASM
 ENDIF
-                      db   'LOADLIN v',LOADLIN_VERSION,' (C) 1994..2000 Hans Lermen <lermen@fgan.de>',13,10,'$'
+                      db   'LOADLIN v',LOADLIN_VERSION,' (C) 1994..2002 Hans Lermen <lermen@fgan.de>',13,10,'$'
 comspec_tx            db   'comspec',0
 windows_tx            db   'windir',0
 err_uppermem_tx       db   'Not enough free memory between 90000h and 9ffffh,',13,10

@@ -19,7 +19,7 @@ startup_32:
 	cli
 	cld
 	movw %cs,%ax
-	addb $8,%ax	#KERNEL_DS is always one slot behind KERNEL_CS
+	addb $8,%al	#KERNEL_DS is always one slot behind KERNEL_CS
 #	movl $(KERNEL_DS),%eax
 	mov %ax,%ds
 	mov %ax,%es

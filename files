@@ -5,6 +5,7 @@ test.par
 linux.bat
 initrd.tgz
 files
+doc
 doc/announce.txt
 doc/changes
 doc/manual.txt
@@ -12,6 +13,7 @@ doc/lodlin16.lsm
 doc/quicksta.rt
 doc/params.doc
 doc/initrd.txt
+src
 src/loadlin.asm
 src/loadlina.asm
 src/loadlini.asm

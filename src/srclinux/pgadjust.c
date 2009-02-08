@@ -8,12 +8,11 @@
 #ifdef STANDALONE_DEBUG
   #include <stdio.h>
   #include <stdlib.h>
+  #include <string.h>
 #endif
 
 
-#include <string.h>
 #include <asm/segment.h>
-#include <asm/io.h>
 
 /*
  * These are set up by the setup-routine at boot-time:
@@ -88,6 +87,32 @@ struct pages_list {
 static void error(char *m);
  
 #ifndef STANDALONE_DEBUG
+
+	/* ---- outb_p stolen from linux/include/asm/io.h ---- */
+
+#define SLOW_DOWN_IO __asm__ __volatile__("outb %al,$0x80")
+
+#define __OUT1(s,x) \
+extern inline void __out##s(unsigned x value, unsigned short port) {
+
+#define __OUT2(s,s1,s2) \
+__asm__ __volatile__ ("out" #s " %" s1 "0,%" s2 "1"
+
+#define __OUT(s,s1,x) \
+__OUT1(s,x) __OUT2(s,s1,"w") : : "a" (value), "d" (port)); } \
+__OUT1(s##c,x) __OUT2(s,s1,"") : : "a" (value), "id" (port)); } \
+__OUT1(s##_p,x) __OUT2(s,s1,"w") : : "a" (value), "d" (port)); SLOW_DOWN_IO; } \
+__OUT1(s##c_p,x) __OUT2(s,s1,"") : : "a" (value), "id" (port)); SLOW_DOWN_IO; }
+
+__OUT(b,"b",char)
+
+#define outb_p(val,port) \
+((__builtin_constant_p((port)) && (port) < 256) ? \
+	__outbc_p((val),(port)) : \
+	__outb_p((val),(port)))
+
+	/* ---- end of outb_p ----- */
+
 static void puts(const char *);
   
 static char *vidmem = (char *)0xb8000;
@@ -140,16 +165,8 @@ static void puts(const char *s)
 	outb_p(0xff & (pos >> 1), vidport+1);
 }
 
-__ptr_t memset(__ptr_t s, int c, size_t n)
-{
-	int i;
-	char *ss = (char*)s;
-
-	for (i=0;i<n;i++) ss[i] = c;
-}
-
-__ptr_t memcpy(__ptr_t __dest, __const __ptr_t __src,
-			    size_t __n)
+static void * memcpy(void * __dest, void * __src,
+			    unsigned int __n)
 {
 	int i;
 	char *d = (char *)__dest, *s = (char *)__src;

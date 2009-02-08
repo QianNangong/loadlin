@@ -1,5 +1,5 @@
 TESTX = 0
-LOADLIN_VERSION equ '1.6b'
+LOADLIN_VERSION equ '1.6c'
 
 ;   >>> this is file LOADLIN.ASM
 ;============================================================================
@@ -159,7 +159,7 @@ hd1_disk_par  label   byte ;090     hd1-disk-parameter from intvector 0x46
 ;             --------------------------------
 ;                        within this as loaded from "zImage"
               org     01F4h
-kernel_size   dw      ?  ; size of kernel-part in the image-file
+kernel_size16 dw      ?  ; size of kernel-part in the image-file
                          ; (in 16 byte units, rounded up)
 swap_dev      dw      ?  ; swap device
 
@@ -321,7 +321,7 @@ High_Seg        dw    kernel_end ; here first 512 + 4*512 + n*512 bytes of image
     ; the following values are cleared on each call to "parscommandline"
     ; (see "clear_to_default")
 parse_switches  label byte
-new_setup_size  dw    0
+new_setup_size  dw    0,0	; NOTE: need the high word to be 0
 new_vga_mode    dw    0
 new_ram_disk    dw    0
 cl_pointer      dw    0  ; while parsing: aux pointer to command_line
@@ -377,6 +377,8 @@ cpu_check_status dw   0
 setup_version    dw   0       ; =0, if old setup
                               ; else contents of setup_header_version
 
+kernel_size	dd    0       ; will be either calculated from kernel_size16
+			      ; or from the filesize of the image
 
 ;--------------------higmem stuff -----v
 xms_entry dd      0
@@ -1002,6 +1004,7 @@ new_bootsect:
         cmp      ax,cx
         jne      fileopened_wrong
         call     get_setup_version
+	call     handle_kernel_size  ; kernel >2.4.5 we may have bzImages > 1Meg
         cmp      setup_version,0201h ; do we have to set setup heap ?
         jb       new_bootsect_3      ; no
         cmp      option_noheap,0     ; yes, but is it disabled ?
@@ -1109,8 +1112,9 @@ dont_patch_:
         mov      kernelversion,eax
         call     handle_kernel_specifics
                           ; ok, now check the size of the kernel
-        movzx    eax,kernel_size
-        shl      eax,4
+;        movzx    eax,kernel_size
+;        shl      eax,4
+	mov	eax,kernel_size
         cmp      eax,load_buffer_size
         jb       have_space
         lea      dx,err_kernel_to_big_tx
@@ -1176,8 +1180,9 @@ no_option_t:
 
                             ; now loading the kernel
         mov      bx,fhandle
-        movzx    ecx,kernel_size
-        shl      ecx,4
+;        movzx    ecx,kernel_size
+;        shl      ecx,4
+	mov	ecx,kernel_size
         mov      di,kernel_load_frame
         movzx    edi,di
         shl      edi,4
@@ -1187,8 +1192,11 @@ no_option_t:
         mov      print_dots,0
         call     print_crlf
         jc       err_io
+	cmp      setup_version,0202h
+	jae      no_need_to_roundup
         add      eax,15
         and      al,0f0h
+no_need_to_roundup:
         cmp      eax,ecx
         jnz      fileopened_wrong
                            ; ok, all is read into memory
@@ -1298,7 +1306,7 @@ move_kernel_down proc near
         cld
 mgran = 08000h
         mov      bp,mgran shr 4
-        mov      ax,kernel_size
+        mov      ax,kernel_size16
         mov      bx,kernel_start
         mov      dx,kernel_load_frame
 @@loop:
@@ -1463,6 +1471,33 @@ print_dot endp
 
 
 granularity = 01000h
+
+handle_kernel_size proc near
+; this tries to find out the actual kernel size
+; because kernels > 2.4.5 can have bigger bzImages then 1Meg and
+; kernel_size16 simply will wrap around without notification
+	push	bx
+	push	eax
+		; first check if the kernel follows the old standard
+	cmp	setup_version,0202h
+	jae	@@bigger
+	movzx	eax,kernel_size16
+	shl	eax,4
+	jmp	short @@ex
+
+@@bigger:
+		; first get the filesize
+	mov	bx,fhandle
+	call	get_filesize
+		; now subtract bootsect and setup.S size
+	sub	eax,dword ptr new_setup_size	; minus setup.S
+	sub	eax,200h			; minus bootsector
+@@ex:
+	mov	kernel_size,eax
+	pop	eax
+	pop	bx
+	ret
+handle_kernel_size endp
 
 read_handle proc    near
 ; input:

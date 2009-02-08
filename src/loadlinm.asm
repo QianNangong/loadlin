@@ -697,10 +697,13 @@ load_initrd proc near
         add      eax,@@end_of_physmem
         and      ax,0f000h     ; round down to full page boundary
         mov      ramdisk_image,eax
-        movzx    eax,kernel_size
-        add      ax,0ffh
-        mov      al,0          ; round up to page boundary
-        shl      eax,4         ; size of compressed kernel
+;        movzx    eax,kernel_size
+;        add      ax,0ffh
+;        mov      al,0          ; round up to page boundary
+;        shl      eax,4         ; size of compressed kernel
+	mov      eax,kernel_size
+	add      eax,0fffh	; round up to page boundary
+	and      eax,0fffff000h	; size of compressed kernel
         mov      ecx,eax
         shl      eax,1         ; estimated size of decompressed kernel
                                ; (we assume a decompression rate of 1:2)
