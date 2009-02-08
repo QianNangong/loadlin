@@ -1,4 +1,4 @@
-IMAGE_OFFSET = 0x94010
+IMAGE_OFFSET = 0x95010
 
 KDIR = /usr/src/linux
 HEAD = loadlinh.o

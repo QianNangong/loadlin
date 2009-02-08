@@ -89,7 +89,7 @@ our_stacksize            =     space2k
 kernel_start_ equ     01000h     ; here the kernel must go
 kernel_end    equ     09000h
 standard_setup_sects  equ 4      ; number of setup sectors, older kernels
-maximum_setup_sects   equ (32-1) ; max number of setup sectors for newer kernels
+maximum_setup_sects   equ (40-1) ; max number of setup sectors for newer kernels
 High_Seg_     equ     kernel_end  ; here first 512 + 4*512 + n*512 bytes of image must go
 High_Addr_    equ     (High_Seg_*16)
 
@@ -294,7 +294,7 @@ real_32_startup  dd    1000h
 startup_32:
                 ; here we insert the GCC compiled 32-bit code part
                 ; it will be our point to start Linux
-                ; it's current address is 0x94010
+                ; it's current address is 0x95010
                 ;            CHECKIT------^^^^^^^ !!!
 IF 1
      INCLUDE PGADJUST.ASM
@@ -813,8 +813,8 @@ start_0:
 IF 1
         sub      ax,es:PSP_memend_frame
 ELSE ;TEST (to simulate an occupied 90000 segment )
-;        sub      ax,09400h
-        sub      ax,05400h
+;        sub      ax,09500h
+        sub      ax,05500h
 ENDIF
         jb       start_3
                  ; we have the 9000 page occupied by some program
@@ -994,7 +994,7 @@ have_bootsect:
         jnz      new_bootsect
         mov      ch,2*standard_setup_sects
 new_bootsect:
-        cmp      cx,maximum_setup_sects*512
+        cmp      cx,maximum_setup_sects*512 ; XXX: this check is not enough, now that setup has a BSS since it's C...
         ja       err_setup_too_long
         mov      new_setup_size,cx
         movzx    edi,di

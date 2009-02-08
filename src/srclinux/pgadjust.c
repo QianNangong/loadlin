@@ -73,13 +73,13 @@ struct pages_list {
 };
 
 #ifndef STANDALONE_DEBUG
-#define PAGELIST     (*(struct pages_list **)0x94008)
+#define PAGELIST     (*(struct pages_list **)0x95008)
 #else
   struct pages_list *PAGELIST=0;
 #endif
 
 #define S PAGELIST->sources
-#define REAL_STARTUP_32  ( *((unsigned long *)0x9400C) )
+#define REAL_STARTUP_32  ( *((unsigned long *)0x9500C) )
 
 /* --------------------------------------------------------------------- */
 
