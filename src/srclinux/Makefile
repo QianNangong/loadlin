@@ -21,11 +21,12 @@ all: pgadjust.asm Makefile
 pgadjust.asm: pgadjust.out Makefile
 	echo "; 32-bit code, linkaddress: $(IMAGE_OFFSET)" >pgadjust.as
 	hexdump -v -e '" DD  " 8/4 "0%Xh," 1/4 "0%Xh\n"' pgadjust.out >>pgadjust.as
-	todos <pgadjust.as >pgadjust.asm
+	u2d <pgadjust.as >pgadjust.asm
 	rm -f pgadjust.as
 
 pgadjust.out: pgadjust Makefile
-	objdump -k -q  -o $(IMAGE_OFFSET) pgadjust > pgadjust.out
+	objcopy -O binary pgadjust pgadjust.out
+#	objdump -k -q  -o $(IMAGE_OFFSET) pgadjust > pgadjust.out
 	
 loadlinh.o: loadlinh.S
 	$(CC) -traditional -c loadlinh.S

@@ -16,9 +16,11 @@
 	.globl startup_32
 	
 startup_32:
-	cld
 	cli
-	movl $(KERNEL_DS),%eax
+	cld
+	movw %cs,%ax
+	addb $8,%ax	#KERNEL_DS is always one slot behind KERNEL_CS
+#	movl $(KERNEL_DS),%eax
 	mov %ax,%ds
 	mov %ax,%es
 	mov %ax,%fs
@@ -43,4 +45,4 @@ startup_32:
 	call SYMBOL_NAME(page_adjustment)
 	xorl %ebx,%ebx
 #	ljmp $(KERNEL_CS), $0x1000
-	jmp  %eax
+	jmp  *%eax

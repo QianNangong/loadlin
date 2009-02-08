@@ -1017,7 +1017,7 @@ logo_tx               label byte
 IFDEF ALPHA
   INCLUDE LOADLINA.ASM
 ENDIF
-                      db   'LOADLIN v',LOADLIN_VERSION,' (C) 1994..1996 Hans Lermen <lermen@elserv.ffm.fgan.de>',13,10,'$'
+                      db   'LOADLIN v',LOADLIN_VERSION,' (C) 1994..2000 Hans Lermen <lermen@fgan.de>',13,10,'$'
 comspec_tx            db   'comspec',0
 windows_tx            db   'windir',0
 err_uppermem_tx       db   'Not enough free memory between 90000h and 9ffffh,',13,10
