@@ -18,11 +18,7 @@
 ;
 ;----------------------------------------------------------------------------
 ;   Comments and bug reports are welcome and may be sent to:
-;   E-Mail:    lermen@elserv.ffm.fgan.de
-;   SnailMail: Hans Lermen
-;              Am Muehlenweg 38
-;              D53424 REMAGEN-Unkelbach
-;              GERMANY
+;   E-Mail:    samuel.thibault@ens-lyon.org
 ;
 ;============================================================================
 

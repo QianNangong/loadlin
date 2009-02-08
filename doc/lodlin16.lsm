@@ -1,7 +1,7 @@
 Begin3
 Title:          LOADLIN, loads Linux with command line from DOS
-Version:        1.6
-Entered-date:   01MAY96
+Version:        1.6d
+Entered-date:   08FEB09
 Description:    This is a boot loader for Linux that runs under MSDOS.
                 It can boot Linux from a DOS prompt or CONFIG.SYS, and fully
                 supports the command line feature of the Linux kernel.
@@ -12,13 +12,9 @@ Description:    This is a boot loader for Linux that runs under MSDOS.
                 and Hans Lermen (LOADLIN).
 Keywords:       LOADLIN, BOOT, bzImage, initrd
 Author:         Hans Lermen <lermen@elserv.ffm.fgan.de>
-Maintained-by:  Hans Lermen <lermen@elserv.ffm.fgan.de>
-Primary-site:   sunsite.unc.edu /pub/Linux/system/Linux-boot
-                154k lodlin16.tgz
-Alternate-site: tsx-11.mit.edu /pub/linux/dos_utils
-                154k lodlin16.tar.gz
-Original-site:  elserv.ffm.fgan.de /pub/linux/loadlin-1.6
-                154k lodlin16.tgz
+Maintained-by:  Samuel Thibault <samuel.thibault@ens-lyon.org>
+Original-site:  youpibouh.thefreecat.org loadlin
+                86k loadlin-1.6d.tgz
 Platform:       Linux >= 1.3.73 for bzImage+initrd,
                 Linux >= 0.99.15f for zImage,
                 MSDOS, WINDOWS95's DOS (or compatible operating system)

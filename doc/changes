@@ -2,6 +2,15 @@
 			=======
 
 
+LOADLIN-16d
+===========
+
+Support for loading very big bzImages: up to ~200MB have been tested.
+Fix recent linux setup (>= 2.6.23) which use BSS.
+
+		Feb 8 2009, Samuel Thibault <samuel.thibault@ens-lyon.org>
+
+
 LOADLIN-16c
 ===========
 
