@@ -328,13 +328,16 @@ free_xms_block endp
 
 move_anywhere_xms proc near
 ; input:
-;   ESI= linear source address   (must be in lowmem )
+;   ESI= linear source address
 ;   EDI= linear target address
 ;    CX= size to move, must be <= 4096 !!!  (actually _is_ always 4096)
 ; output:
 ;    all registers preserved
           cmp     edi,DUMMY_XMS_BLOCK_START
+          jae     @@high
+          cmp     esi,DUMMY_XMS_BLOCK_START
           jb      move_simple
+@@high:
           pushad
           push    ds
           mov     ecx,1000h   ; force a length of one page to move
@@ -343,15 +346,38 @@ move_anywhere_xms proc near
                               ; we simple do it also for the last page
           mov     @@length,ecx
           sub     edi,DUMMY_XMS_BLOCK_START
-          mov     @@doffs,edi
+          jb      @@lowdi
+          mov     @@doffs,edi  ; high destination, just record
           mov     di,xms_handle
           mov     @@dhandle,di
+          jmp     @@source
+@@lowdi:
+          ror     edi,4
+          mov     word ptr [@@doffs+2],di
+          xor     di,di
+          rol     edi,4
+          mov     word ptr [@@doffs],di
+          xor     di,di
+          mov     word ptr [@@dhandle],di
+
+@@source:
+          sub     esi,DUMMY_XMS_BLOCK_START
+          jb      @@lowsi
+          mov     [@@soffs],esi  ; high destination, just record
+          mov     si,xms_handle
+          mov     [@@shandle],si
+          jmp     @@done
+@@lowsi:
           ror     esi,4
           mov     word ptr @@soffs+2,si
           xor     si,si
           rol     esi,4
           mov     word ptr @@soffs,si
-          lea     si,@@length
+          xor     si,si
+          mov     word ptr [@@shandle],si
+
+@@done:
+          lea     si,[@@length]
           push    cs
           pop     ds
           xmscall XMS_MOVE_BLOCK
@@ -359,7 +385,7 @@ move_anywhere_xms proc near
           popad
           ret
 @@length     dd      ?
-@@shandle    dw      0
+@@shandle    dw      ?
 @@soffs      dd      ?
 @@dhandle    dw      ?
 @@doffs      dd      ?
@@ -516,20 +542,46 @@ free_extended_memory proc near
         cmp      high_mem_access,USING_VCPI
         jne      @@ex
 @@vcpi:
-        push_    eax,bx,edx
-        mov      bx,word ptr pageadjlist.ncount
-        shl      bx,2
+        push_    eax,bx,ecx,dx,bp,esi,edi
+        mov      cx,word ptr pageadjlist.ncount
+        sub      cx,1
+        jc       @@ex1
+        mov      bp,cx
+        mov      bx,cx
+        shr      bp,(9 - 2)
+        shl      bx,3
+        and      bp,~03h
+@@bigloop:
+        and      bx,0fffh
 @@loop:
-        sub      bx,4
-        jb       @@ex1
-        mov      edx,pageadjlist.sources[bx]
+        mov      edx,pagelist[bx]
         cmp      edx,0100000h
         jb       @@ex1
         mov      ax,0DE05h   ; free 4K VCPI-page
         int      emm_int
-        jmp      @@loop
+        dec      cx
+        jc       @@ex1
+        sub      bx,8
+        jnc      @@loop
+        sub      bp,4
+        ; get the page adresses page
+        mov      esi,pageadjlist.sources[bp]
+        mov      di,ds
+        movzx    edi,di
+        shl      edi,4
+        add      edi,offset [pagelist]
+        push     ecx
+        mov      ecx,01000h
+        call     move_anywhere
+        pop      ecx
+        mov      edx,esi
+        cmp      edx,0100000h
+        jb       @@ex1
+        mov      ax,0DE05h   ; free 4K VCPI-page
+        int      emm_int
+        jmp      @@bigloop
 @@ex1:
-        pop_     eax,bx,edx
+        pop_     eax,bx,ecx,dx,bp,esi,edi
 @@ex:
         ret
 @@xms:
@@ -541,24 +593,81 @@ free_extended_memory endp
 final_page_adjust_list_handling proc near
         cmp      need_mapped_put_buffer,0
         jz       @@ex
-        cmp      high_mem_access,USING_XMS
-        jne      @@ex
 
-        push_    eax,bx
+        push_    eax,bx,ecx,dx,bp,esi,edi
+        mov      dx,word ptr [pageadjlist.ncount]
+        sub      dx,1
+        jc       @@ex1
+        ; allocate a page for the pending page adresses
+        call     get_buffer_from_heap
+        jnc      @@gotmem
+        jmp      errnomem
+@@gotmem:
+        ; always copy the pending page adresses
+        mov      edi,eax
+        mov      si,ds
+        movzx    esi,si
+        shl      esi,4
+        add      esi,offset [pagelist]
+        mov      ecx,01000
+        call     move_anywhere
+        xchg     esi,edi
+        mov      bp,dx
+        shr      bp,(9 - 2)
+        and      bp,~03h
+        mov      pageadjlist.sources[bp],eax
+
+        cmp      high_mem_access,USING_XMS
+        jne      @@ex1
         call     lock_xms_block
-        mov      bx,word ptr pageadjlist.ncount
-        shl      bx,2
+        mov      bp,dx
+        mov      bx,dx
+        shr      bp,(9 - 2)
+        shl      bx,3
+        and      bp,~03h
+@@bigloop:
+        and      bx,0fffh
 @@loop:
-        sub      bx,4
-        jb       @@ex1
-        mov      eax,pageadjlist.sources[bx]
+        mov      eax,pagelist[bx]
         sub      eax,DUMMY_XMS_BLOCK_START
-        jb       @@ex1
+        jb       @@done
         add      eax,xms_phys_addr
-        mov      pageadjlist.sources[bx],eax
-        jmp      @@loop
+        mov      pagelist[bx],eax
+        sub      dx,1
+        jc       @@done
+        sub      bx,8
+        jnc      @@loop
+        xchg     esi,edi
+        mov      ecx,01000h
+        call     move_anywhere
+        sub      edi,DUMMY_XMS_BLOCK_START
+        jb       @@low
+        add      edi,xms_phys_addr
+        mov      pageadjlist.sources[bp],edi
+@@low
+        sub      bp,4
+        ; get the next page adresses page
+        mov      esi,pageadjlist.sources[bp]
+        mov      di,ds
+        movzx    edi,di
+        shl      edi,4
+        add      edi,offset [pagelist]
+        mov      ecx,01000h
+        call     move_anywhere
+        jmp      @@bigloop
+@@done:
+        xchg     esi,edi
+        mov      ecx,01000h
+        call     move_anywhere
+        sub      edi,DUMMY_XMS_BLOCK_START
+        jb       @@low2
+        add      edi,xms_phys_addr
+        mov      pageadjlist.sources[bp],edi
+	mov  eax, edi
+	call writehexdword
+@@low2
 @@ex1:
-        pop_     eax,bx
+        pop_     eax,bx,ecx,dx,bp,esi,edi
 @@ex:
         ret
 final_page_adjust_list_handling endp
@@ -594,15 +703,40 @@ map_high_page proc near
         cmp      need_mapped_put_buffer,0
         jz       @@ex
         push_    bx,edi
-        mov      bx,word ptr pageadjlist.ncount
-        shl      bx,2
+        mov      ebx,[pageadjlist.ncount]
+        test     ebx,ebx
+        jz       @@ok
+        test     ebx,01ffh
+        jnz      @@ok
+        ; needs to save the previous page of page addresses
+        push_    eax,ecx,esi,edi
+        call     get_buffer_from_heap
+        jnc      @@gotmem
+        jmp      errnomem
+@@gotmem:
+        mov      edi,eax
+        mov      si,ds
+        movzx    esi,si
+        shl      esi,4
+        add      esi,offset [pagelist]
+        mov      ecx,01000h
+        call     move_anywhere
+        mov      di,bx
+        shr      di,(9 - 2)
+        and      di,~03h
+        sub      di,4
+        mov      pageadjlist.sources[di],eax
+        pop_     eax,ecx,esi,edi
+@@ok:
+        and      bx,01ffh
+        shl      bx,3
         and      di,0f000h
-        mov      pageadjlist.sources[bx],edi
-        inc      pageadjlist.ncount
-        mov      bx,word ptr pageadjlist.number_of_blocks
+        mov      pagelist[bx],edi
+        inc      dword ptr [pageadjlist.ncount]
+        mov      bx,word ptr [pageadjlist.number_of_blocks]
         dec      bx
         shl      bx,3    ; * sizeof(pblock)
-        inc      pageadjlist.blocks.tcount[bx]
+        inc      dword ptr pageadjlist.blocks.tcount[bx]
         pop_     bx,edi
 @@ex:
         ret
@@ -657,6 +791,7 @@ put_buffer  proc near
 @@err:
         pop_    ds,es
         popad
+errnomem:
         DosCall  DOS_CLOSE_FILE
         lea     dx,@@tx
         call    print
@@ -676,6 +811,11 @@ load_initrd proc near
         cmp      need_mapped_put_buffer,0
         jz       @@err_unable
         call     get_effective_physmem
+        ; divide by two to avoid e.g. ACPI data
+        shr      eax,1
+        ; limit ourselves to 2G since we use special values in
+        ; pgadjust.c
+        and      eax,7fffffffh
         mov      end_of_physmem,eax
         cmp      high_mem_access,USING_INT15
         jne      @@1

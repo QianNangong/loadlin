@@ -389,6 +389,7 @@ xms_phys_addr dd   0
 pblock  struc
   taddr  DD   ? ; linear address where the block of pages
                 ; must be moved to
+; 65536 pages -> 256MB max
   tstart DW   ? ; index within sources of first entry
   tcount DW   ? ; number of entries for taddr in sources
 pblock  ends
@@ -398,8 +399,9 @@ pages_list struc
   number_of_blocks DD ?    ; number of valid blocks-items
   auxbuf    DD     ?       ; address of 4096 bytes auxiliary buffer
   blocks    pblock 4 dup(?)
-  sources   DD     1024 dup (?) ; list of addresses where the block of pages
-                                ; currently _is_ located
+; Dynamic pgadjust uses one indirection.
+; 128 pages of adresse+usedby gives us the above 65536 maximum pages.
+  sources   DD     128 dup (?) ; list of addresses where the block of pages
 pages_list ends
 
 
@@ -1647,6 +1649,9 @@ command_line    db    space2k dup(?)  ; kernel accepts maximum of 2Kb
                              ; this is for 32-bit code
 pageadjlist     pages_list   <?>
   ; -------------------------------^
+
+pagelist        dd    1024 dup (?)    ; temporary buffer for page adjust list,
+                                      ; to be pushed to high memory.
 
   ; -------------------------------v
   ; this buffer is for the "default bios interruptvectors"

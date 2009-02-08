@@ -12,7 +12,6 @@
 #endif
 
 
-#include <asm/segment.h>
 
 /*
  * These are set up by the setup-routine at boot-time:
@@ -57,10 +56,12 @@ struct pblock {
 };
 
 struct source_entry {
-  unsigned long usedby:12;
+  unsigned long unused:12;
   unsigned long pagenum:20;
-  #define IS_UNUSED  0xfff
-  #define IS_MOVED   0xffe
+  unsigned long usedby;
+  #define IS_UNUSED  0xffffffffUL
+  #define IS_MOVED   0xfffffffeUL
+  #define IS_PGLIST  0x80000000UL
 };
 
 struct pages_list {
@@ -68,7 +69,7 @@ struct pages_list {
   long number_of_blocks;   /* number of valid blocks-items */
   void *auxbuf;            /* address of 4096 bytes auxiliary buffer */
   struct pblock blocks[4];
-  struct source_entry sources[1]; /* list of addresses where the block of pages
+  struct source_entry *(sources[1]); /* list of addresses where the block of pages
                               currently _is_ located */
 };
 
@@ -78,7 +79,7 @@ struct pages_list {
   struct pages_list *PAGELIST=0;
 #endif
 
-#define S PAGELIST->sources
+#define S(i) PAGELIST->sources[(i) / 512][(i) % 512]
 #define REAL_STARTUP_32  ( *((unsigned long *)0x9500C) )
 
 /* --------------------------------------------------------------------- */
@@ -114,6 +115,8 @@ __OUT(b,"b",char)
 	/* ---- end of outb_p ----- */
 
 static void puts(const char *);
+static void * memcpy(void * __dest, void * __src,
+			    unsigned int __n);
   
 static char *vidmem = (char *)0xb8000;
 static int vidport;
@@ -240,13 +243,18 @@ static void build_references(void)
 {
   int i,j;
   for (i=0; i < PAGELIST->count; i++) {
-    S[i].usedby = IS_UNUSED;
+    S(i).usedby = IS_UNUSED;
+  }
+  for (i=0; i < (PAGELIST->count+511) / 512; i++) {
+    j = index_within_sources((unsigned long)PAGELIST->sources[i] >> 12);
+    if (j != IS_UNUSED)
+      S(j).usedby = IS_PGLIST | i;
   }
   for (i=0; i < PAGELIST->count; i++) {
-    j= index_within_sources(S[i].pagenum);
+    j= index_within_sources(S(i).pagenum);
     if ( j != IS_UNUSED ) {
-      if (j == i) S[i].usedby = IS_MOVED;
-      else S[j].usedby = i;
+      if (j == i) S(i).usedby = IS_MOVED;
+      else S(j).usedby = i;
     }
   }
 }
@@ -261,7 +269,7 @@ static printmove(int sindex)
   if (!(count++ & 3)) puts("\n");
   put_hex((long)address_of_target(sindex));
   puts(" <-- ");
-  put_hex(S[sindex].pagenum << 12);
+  put_hex(S(sindex).pagenum << 12);
   puts("  ");
 }
 #endif
@@ -269,17 +277,32 @@ static printmove(int sindex)
 
 static void make_free(int sindex)
 {
-  if (S[sindex].usedby == IS_MOVED) return;
-  if (S[sindex].usedby == recursion_start_index) {
+  if (S(sindex).usedby == IS_MOVED) return;
+  if (S(sindex).usedby == IS_UNUSED) {
+  } else
+  if (S(sindex).usedby & IS_PGLIST) {
+    int index = S(sindex).usedby & ~IS_PGLIST;
+    void *addr = (void*) (S(recursion_start_index).pagenum << 12);
+    int j;
+    /* we can just exchange with recursion_start_index and fix */
+    memcpy_page(PAGELIST->auxbuf, addr);
+    S(recursion_start_index).pagenum = (unsigned long)(PAGELIST->auxbuf) >> 12;
+    memcpy_page(addr, address_of_target(sindex));
+    PAGELIST->sources[index] = addr;
+    j = index_within_sources(((unsigned long) addr) >> 12);
+    if (j != IS_UNUSED)
+      S(j).usedby = IS_PGLIST | index;
+  } else
+  if (S(sindex).usedby == recursion_start_index) {
     /* we have to stop recursion and need the aux-buffer to save the page */
     memcpy_page(PAGELIST->auxbuf, address_of_target(sindex));
-    S[S[sindex].usedby].pagenum = (unsigned long)(PAGELIST->auxbuf) >>12;
+    S(recursion_start_index).pagenum = (unsigned long)(PAGELIST->auxbuf) >>12;
   }
   else {
-    if (S[sindex].usedby != IS_UNUSED) make_free(S[sindex].usedby); /* recursion */
+    if (S(sindex).usedby != IS_UNUSED) make_free(S(sindex).usedby); /* recursion */
   }
-  memcpy_page(address_of_target(sindex), (void *)(S[sindex].pagenum << 12));
-  S[sindex].usedby = IS_MOVED;
+  memcpy_page(address_of_target(sindex), (void *)(S(sindex).pagenum << 12));
+  S(sindex).usedby = IS_MOVED;
 #ifdef VERBOSE
   printmove(sindex);
 #endif
@@ -293,15 +316,15 @@ static void adjust(void)
   build_references();
 #ifdef STANDALONE_DEBUG
   for (i=0; i < PAGELIST->count; i++) {
-    printf("%3d %p source=%x usedby=%d\n",i,address_of_target(i), S[i].pagenum << 12, S[i].usedby);
+    printf("%3d %p source=%x usedby=%d\n",i,address_of_target(i), S(i).pagenum << 12, S(i).usedby);
   }
 #endif
   for (i=0; i < PAGELIST->count; i++) {
     recursion_start_index=i;
     make_free(i);
-    if (S[i].usedby != IS_MOVED) {
-      memcpy_page(address_of_target(i), (void *)(S[i].pagenum << 12));
-      S[i].usedby = IS_MOVED;
+    if (S(i).usedby != IS_MOVED) {
+      memcpy_page(address_of_target(i), (void *)(S(i).pagenum << 12));
+      S(i).usedby = IS_MOVED;
 #ifdef VERBOSE
       printmove(i);
 #endif
@@ -350,7 +373,7 @@ int main(int argc, char** argv)
 
 unsigned long page_adjustment()
 {
-  int i= PAGELIST->sources[0].pagenum;
+  int i= S(0).pagenum;
   if (SCREEN_INFO.orig_video_mode == 7) {
     vidmem = (char *) 0xb0000;
     vidport = 0x3b4;
