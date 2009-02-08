@@ -345,7 +345,11 @@ unsigned long page_adjustment()
   lines = SCREEN_INFO.orig_video_lines;
   cols = SCREEN_INFO.orig_video_cols;
 
+#if 0 /* this won;t work any more, because 2.1.22 changed the format
+         of EXT_MEM_K, see STANDARD_MEMORY_BIOS_CALL in setup.S
+       */
   if (EXT_MEM_K < (3*1024)) error("Less than 4MB of memory.\n");
+#endif
 
   if (PAGELIST) {
 #ifdef VERBOSE

@@ -1,5 +1,5 @@
 TESTX = 0
-LOADLIN_VERSION equ '1.6'
+LOADLIN_VERSION equ '1.6a'
 
 ;   >>> this is file LOADLIN.ASM
 ;============================================================================
