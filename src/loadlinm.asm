@@ -94,7 +94,7 @@ call_pmode_routine proc near
           CLTS                 ; clear taskswitch flag
           .386
           mov     eax,0DE0Ch
-          call    fword ptr cs:server_vcpi_entry  ; back to VM86
+          call    far fword ptr cs:server_vcpi_entry  ; back to VM86
 
           ; and returns here in VM86 mode
 @@pmode_return:
