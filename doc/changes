@@ -2,6 +2,17 @@
 			=======
 
 
+LOADLIN-16e
+===========
+
+A bug in my compiler had broken VCPI support.
+Keeping room for ACPI was problematic with machines where INT15 reports
+only 16MB memory and a kernel is being loaded.
+These should be fixed now.
+
+		Jan 25 2010, Samuel Thibault <samuel.thibault@ens-lyon.org>
+
+
 LOADLIN-16d
 ===========
 
@@ -270,3 +281,4 @@ version 1.0   (NOTE: I allways start any packet-numbering with 1.0)
 
 Private ALPHA version.
 Never released
+
