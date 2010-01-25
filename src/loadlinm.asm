@@ -1,7 +1,7 @@
 ;   >>> this is file LOADLINM.ASM
 ;============================================================================
 ;   LOADLIN v1.6 (C) 1994..1996 Hans Lermen (lermen@elserv.ffm.fgan.de)
-;   (C) 2008-2009 Samuel Thibault (samuel.thibault@ens-lyon.org)
+;   (C) 2008..2010 Samuel Thibault (samuel.thibault@ens-lyon.org)
 ;
 ;   This program is free software; you can redistribute it and/or modify
 ;   it under the terms of the GNU General Public License as published by

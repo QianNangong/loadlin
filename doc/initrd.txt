@@ -276,3 +276,4 @@ http://youpibouh.thefreecat.org/loadlin/bzImage+initrd-1.3.72.patch.gz
 A very simple example for building an image for initrd, also including
 the program 'freeramdisk', can be found on
 http://youpibouh.thefreecat.org/loadlin/initrd-example.tgz
+

@@ -1019,6 +1019,7 @@ IFDEF ALPHA
   INCLUDE LOADLINA.ASM
 ENDIF
                       db   'LOADLIN v',LOADLIN_VERSION,' (C) 1994..2002 Hans Lermen <lermen@fgan.de>',13,10,'$'
+                      db   '              (C) 2008..2010 Samuel Thibault <samuel.thibault@ens-lyon.org>',13,10,'$'
 comspec_tx            db   'comspec',0
 windows_tx            db   'windir',0
 err_uppermem_tx       db   'Not enough free memory between 90000h and 9ffffh,',13,10
@@ -1036,7 +1037,7 @@ err_wrong_setup_tx    db   'Your current configuration needs interception of "se
                       db   'but the setup-code in your Image file is *very* old (or wrong)',13,10
                       db   'Please use BIOSINTV/REALBIOS or try an other Image file',13,10,'$'
 err_setup_too_long_tx db   'Ooops..., size of "setup.S" has become too long for LOADLIN,',13,10
-                      db   'please E-mail this condition to lermen@elserv.ffm.fgan.de !',13,10,'$'
+                      db   'please E-mail this condition to samuel.thibault@ens-lyon.org !',13,10,'$'
 err_kernel_to_big_tx  db   'not enough memory below 90000h to load kernel',13,10,'$'
 err_io_tx             db   'IO Error during load',13,10,'$'
 insert_floppy_tx      db   'Insert floppy disk for loading into RAMDISK',13,10,'$'

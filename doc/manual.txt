@@ -4,6 +4,7 @@ LOADLIN User Guide                                                  96-04-28
 ============================================================================
 
    LOADLIN v1.6 (C) 1996 Hans Lermen (lermen@elserv.ffm.fgan.de)
+                (C) 2008..2010 Samuel Thibault (samuel.thibault@ens-lyon.org)
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -775,13 +776,7 @@ LOADLIN User Guide                                                  96-04-28
 
       Comments and bug reports are welcome and may be sent to:
 
-      E-Mail:    lermen@elserv.ffm.fgan.de
-
-      SnailMail: Hans Lermen
-                 Am Muehlenweg 38
-                 D53424 REMAGEN-Unkelbach
-                 GERMANY
-
+      E-Mail:    samuel.thibault@ens-lyon.org
 
       ... and PLEASE, PLEASE, PLEASE:
           Check your "Reply to" path for a valid E-Mail address,

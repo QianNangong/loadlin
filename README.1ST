@@ -1,6 +1,7 @@
     LOADLIN.EXE, a loader (running under DOS) for LINUX kernel images
           (fully supporting the kernel's command line feature)
          (C) 1994..1995 Hans Lermen (lermen@elserv.ffm.fgan.de)
+      (C) 2008..2010 Samuel Thibault (samuel.thibault@ens-lyon.org)
     =================================================================
 
 LOADLIN uses the same principle as BOOTLIN from F.Coutant, but has
@@ -66,3 +67,4 @@ Contents of LODLIN16.TGZ
   src/loadlinm.asm
   src/makefile      makefile for TASM
   src/srclinux      32-bit source (must compile under Linux)
+
