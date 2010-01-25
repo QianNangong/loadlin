@@ -808,8 +808,14 @@ load_initrd proc near
         cmp      need_mapped_put_buffer,0
         jz       @@err_unable
         call     get_effective_physmem
-        ; divide by two to avoid e.g. ACPI data
-        shr      eax,1
+        ; drop 1/16 of the memory to avoid e.g. ACPI data, but only if this
+        ; looks like a recent machine (>30MiB)
+        cmp      eax,30*1024*1024
+        jbe      @@2
+        mov      ebx,eax
+        shr      ebx,4
+        sub      eax,ebx
+@@2:
         ; limit ourselves to 2G since we use special values in
         ; pgadjust.c
         and      eax,7fffffffh
