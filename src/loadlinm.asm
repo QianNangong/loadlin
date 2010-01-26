@@ -809,8 +809,8 @@ load_initrd proc near
         jz       @@err_unable
         call     get_effective_physmem
         ; drop 1/16 of the memory to avoid e.g. ACPI data, but only if this
-        ; looks like a recent machine (>30MiB)
-        cmp      eax,30*1024*1024
+        ; looks like a recent machine (>17MiB)
+        cmp      eax,17*1024*1024
         jbe      @@2
         mov      ebx,eax
         shr      ebx,4
