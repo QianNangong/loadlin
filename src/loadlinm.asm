@@ -606,7 +606,7 @@ final_page_adjust_list_handling proc near
         movzx    esi,si
         shl      esi,4
         add      esi,offset [pagelist]
-        mov      ecx,01000
+        mov      ecx,01000h
         call     move_anywhere
         xchg     esi,edi
         mov      bp,dx
