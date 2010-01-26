@@ -827,9 +827,9 @@ load_initrd proc near
         jbe      @@1
         mov      eax,MAXPHYSMEM_FOR_INT15
 @@1:
-        mov      @@end_of_physmem,eax
+        mov      [@@end_of_physmem],eax
         mov      ax,DOS_OPEN_FILE shl 8
-        lea      dx,rdimage_name
+        lea      dx,[rdimage_name]
         DosInt
         jc       @@err_open
         mov      fhandle,ax
@@ -837,7 +837,7 @@ load_initrd proc near
         call     get_filesize
         mov      ramdisk_size,eax
         neg      eax
-        add      eax,@@end_of_physmem
+        add      eax,[@@end_of_physmem]
         and      ax,0f000h     ; round down to full page boundary
         mov      ramdisk_image,eax
 ;        movzx    eax,kernel_size
