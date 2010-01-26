@@ -37,6 +37,10 @@ under the following conditions:
         or
       B) The EMS driver supports VCPI.
 
+Note that some VCPI drivers overwrite the ACPI table located at the end
+of the memory.  This that reduces Linux hardware support, it is thus
+recommended to avoid using such VCPI driver.
+
 
 For a quick start read the QUICKSTA.RT file
 For a detailed description please read the MANUAL.TXT file.
