@@ -30,8 +30,7 @@ under the following conditions:
 
    1. The buffer memory (lowmem + extended) is great enough
       to hold the compressed kernel image (zImage or bzImage)
-      aswell as the initrd image (optional). With nowadays big
-      kernels, this usually means you need a memory manager.
+      aswell as the initrd image (optional).
 
    2. A) The CPU is not in virtual-8086 mode
         or
@@ -40,6 +39,10 @@ under the following conditions:
 Note that some VCPI drivers overwrite the ACPI table located at the end
 of the memory.  This that reduces Linux hardware support, it is thus
 recommended to avoid using such VCPI driver.
+
+Some old BIOSes can not load data above 16MB.  If your kernel+initrd does
+not fit in 16MB, loadlin emits a warning.  If the machine crashes, try using
+a memory manager instead of relying on the BIOS only.
 
 
 For a quick start read the QUICKSTA.RT file

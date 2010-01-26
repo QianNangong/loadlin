@@ -807,27 +807,8 @@ load_initrd proc near
         pushad
         cmp      need_mapped_put_buffer,0
         jz       @@err_unable
-        call     get_effective_physmem
-        ; drop 1/16 of the memory to avoid e.g. ACPI data, but only if this
-        ; looks like a recent machine (>17MiB)
-        cmp      eax,17*1024*1024
-        jbe      @@2
-        mov      ebx,eax
-        shr      ebx,4
-        sub      eax,ebx
-@@2:
-        ; limit ourselves to 2G since we use special values in
-        ; pgadjust.c
-        and      eax,7fffffffh
-        mov      end_of_physmem,eax
-        cmp      high_mem_access,USING_INT15
-        jne      @@1
-                 ; INT15 on some BIOSes will not access above 16Mb
-        cmp      eax,MAXPHYSMEM_FOR_INT15
-        jbe      @@1
-        mov      eax,MAXPHYSMEM_FOR_INT15
-@@1:
-        mov      [@@end_of_physmem],eax
+
+        ; first get ramdisk size
         mov      ax,DOS_OPEN_FILE shl 8
         lea      dx,[rdimage_name]
         DosInt
@@ -836,10 +817,8 @@ load_initrd proc near
         mov      bx,ax
         call     get_filesize
         mov      ramdisk_size,eax
-        neg      eax
-        add      eax,[@@end_of_physmem]
-        and      ax,0f000h     ; round down to full page boundary
-        mov      ramdisk_image,eax
+
+        ; then compute kernel end estimation
 ;        movzx    eax,kernel_size
 ;        add      ax,0ffh
 ;        mov      al,0          ; round up to page boundary
@@ -855,11 +834,47 @@ load_initrd proc near
         add      eax,ecx       ; add padding
 @@3:
         add      eax,(100000h+2000h)   ; (+ gunzip-heap), now we have end of kernel
-        cmp      eax,ramdisk_image
+        mov      [@@kernel_limit],eax
+
+        ; then get size of memory
+        call     get_effective_physmem
+        ; drop 1/16 of the memory to avoid e.g. ACPI data
+        mov      ebx,eax
+        shr      ebx,4
+        sub      eax,ebx
+        ; limit ourselves to 2G since we use special values in
+        ; pgadjust.c
+        and      eax,7fffffffh
+        mov      end_of_physmem,eax
+
+        cmp      high_mem_access,USING_INT15
+        jne      @@1
+                 ; INT15 on some BIOSes will not access above 16Mb
+        cmp      eax,MAXPHYSMEM_FOR_INT15
+        jbe      @@1
+
+        ; more than 16MB and using INT15, try to load below 16MB, in case the
+        ; BIOS is buggy
+        mov      eax,MAXPHYSMEM_FOR_INT15
+        sub      eax,ramdisk_size
+        and      ax,0f000h     ; round down to full page boundary
+        cmp      [@@kernel_limit],eax
+        jb       @@2           ; yes, fits!
+        ; print warning for the user
+        mov      dx,offset @@tx16
+        call     print
+        mov      eax,end_of_physmem
+
+@@1:
+        sub      eax,ramdisk_size
+        and      ax,0f000h     ; round down to full page boundary
+        cmp      [@@kernel_limit],eax
         jnb      @@err_mem
                  ; ok we have place
                             ; now loading the kernel
                          ; NOTE: needing EDI for open_new_mapped_block
+@@2:
+        mov      ramdisk_image,eax
         mov      edi,ramdisk_image
         call     open_new_mapped_block      ; open the first block
         mov      bx,fhandle
@@ -894,12 +909,13 @@ load_initrd proc near
 @@err_unable:
         mov     @@errtx_addr,offset @@txno
         jmp     @@err
-@@end_of_physmem dd  0
 @@tx    db      13,10,"can't open image file for initrd",13,10,'$'
 @@txmem db      13,10,"no place after kernel for initrd",13,10,'$'
+@@tx16  db      13,10,"warning: loading above 16MB using INT15",13,10,'$'
 @@txio  db      13,10,"IO-error while reading initrd",13,10,'$'
 @@txno  db      13,10,"no support in setup for reading initrd",13,10,'$'
 @@errtx_addr dw      0
+@@kernel_limit dd    0
 load_initrd endp
 
 get_filesize proc near
