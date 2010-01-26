@@ -7,7 +7,7 @@ LOADLIN-16e
 
 A bug in my compiler had broken VCPI support.
 Keeping room for ACPI was problematic with machines where INT15 reports
-only 16MB memory and a kernel is being loaded.
+no more than 16MB memory and a kernel is being loaded.
 Depending on its size, the very end of the initrd could be bogus.
 These should be fixed now.
 
