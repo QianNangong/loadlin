@@ -73,14 +73,16 @@ struct pages_list {
                               currently _is_ located */
 };
 
+unsigned long setup_base = 0x95000;
+
 #ifndef STANDALONE_DEBUG
-#define PAGELIST     (*(struct pages_list **)0x95008)
+#define PAGELIST     (*(struct pages_list **)(setup_base + 8))
 #else
   struct pages_list *PAGELIST=0;
 #endif
 
 #define S(i) PAGELIST->sources[(i) / 512][(i) % 512]
-#define REAL_STARTUP_32  ( *((unsigned long *)0x9500C) )
+#define REAL_STARTUP_32  ( *((unsigned long *)(setup_base + 0xc)) )
 
 /* --------------------------------------------------------------------- */
 
@@ -376,6 +378,7 @@ int main(int argc, char** argv)
 unsigned long page_adjustment()
 {
   int i= S(0).pagenum;
+#if 0
   if (SCREEN_INFO.orig_video_mode == 7) {
     vidmem = (char *) 0xb0000;
     vidport = 0x3b4;
@@ -386,6 +389,22 @@ unsigned long page_adjustment()
 
   lines = SCREEN_INFO.orig_video_lines;
   cols = SCREEN_INFO.orig_video_cols;
+
+#else
+  /* setup does not use a fixed address for video modes any more */
+  lines=25;
+  cols=80;
+  vidmem = (char *) 0xb8000;
+  vidport = 0x3d4;
+  SCREEN_INFO.orig_x = 0;
+  SCREEN_INFO.orig_y = 2;
+#endif
+
+  /* The setup base may not be 0x95000 if that wasn't available */
+  unsigned long pc;
+  asm("call 1f\n\t"
+      "1: pop %0\n\t": "=r" (pc));
+  setup_base = pc & ~0xfff;
 
 #if 0 /* this won;t work any more, because 2.1.22 changed the format
          of EXT_MEM_K, see STANDARD_MEMORY_BIOS_CALL in setup.S

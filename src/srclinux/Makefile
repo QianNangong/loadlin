@@ -7,7 +7,7 @@ SYS_SIZE = -DSYS_SIZE=0xFFFF
 OBJECTS = $(HEAD) pgadjust.o
 
 CFLAGS = -D__KERNEL__ -march=i386 -Os -DSTDC_HEADERS -fomit-frame-pointer \
-         -fno-strength-reduce
+         -fno-strength-reduce -fPIC
 
 CC=gcc -m32
 

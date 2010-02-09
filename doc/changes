@@ -7,9 +7,13 @@ LOADLIN-16e
 
 A bug in my compiler had broken VCPI support.
 Depending on its size, the very end of the initrd could be bogus.
-These should be fixed now.
+
 When using INT15, loadlin always try to load kernel+initrd below 16MB for
 old BIOSes, but if that does not fit, now emit a warning and load above 16MB.
+
+Loadlin does not always load setup at 0x95000, since it may not be available
+Linux used to always move itself there, but it doesn't do it any more. Fix
+Loadlin accordingly.
 
 		Jan 26 2010, Samuel Thibault <samuel.thibault@ens-lyon.org>
 

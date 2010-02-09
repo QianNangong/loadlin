@@ -1038,7 +1038,11 @@ have_setup_3:
         mov      type_of_loader,10h  ; our loader type + version
                          ; we tell setup not to start the kernel,
                          ; but our special 32-bit page-adjust-routine
-        mov      cs:code32_start,(High_Seg_*16) + (startup_32-code_org0)
+        mov      ax,High_Seg
+        movzx    eax,ax
+        shl      eax,4
+        add      eax,(startup_32-code_org0)
+        mov      cs:code32_start,eax
                          ; we tell 'read_handle' to use mapped move
         mov      cs:need_mapped_put_buffer,1
                          ; we build the two heaps, low and high

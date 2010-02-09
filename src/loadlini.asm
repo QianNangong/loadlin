@@ -55,6 +55,7 @@ relocate_setup_code proc near
          add    laddr_GDT,eax
          add    laddr_IDT,eax
          add    pagedir_template,eax
+         add    pageadjlist_ptr,eax
          call   preset_pagedir_from_template
 
          pop_   eax,bx
