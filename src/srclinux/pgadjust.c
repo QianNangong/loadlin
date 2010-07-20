@@ -73,12 +73,12 @@ struct pages_list {
                               currently _is_ located */
 };
 
-unsigned long setup_base = 0x95000;
+static unsigned long setup_base = 0x95000;
 
 #ifndef STANDALONE_DEBUG
 #define PAGELIST     (*(struct pages_list **)(setup_base + 8))
 #else
-  struct pages_list *PAGELIST=0;
+  static struct pages_list *PAGELIST=0;
 #endif
 
 #define S(i) PAGELIST->sources[(i) / 512][(i) % 512]
@@ -96,7 +96,7 @@ static void error(char *m);
 #define SLOW_DOWN_IO __asm__ __volatile__("outb %al,$0x80")
 
 #define __OUT1(s,x) \
-extern inline void __out##s(unsigned x value, unsigned short port) {
+static inline void __out##s(unsigned x value, unsigned short port) {
 
 #define __OUT2(s,s1,s2) \
 __asm__ __volatile__ ("out" #s " %" s1 "0,%" s2 "1"
@@ -182,7 +182,7 @@ static void * memcpy(void * __dest, void * __src,
 }
 #endif
 
-void put_hex(unsigned long v)
+static void put_hex(unsigned long v)
 {
   static char table[17]="0123456789ABCDEF";
   char b[9];
