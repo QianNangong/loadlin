@@ -15,7 +15,7 @@ Loadlin does not always load setup at 0x95000, since it may not be available
 Linux used to always move itself there, but it doesn't do it any more. Fix
 Loadlin accordingly.
 
-		Jan 26 2010, Samuel Thibault <samuel.thibault@ens-lyon.org>
+		Aug 25 2010, Samuel Thibault <samuel.thibault@ens-lyon.org>
 
 
 LOADLIN-16d

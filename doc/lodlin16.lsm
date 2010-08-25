@@ -1,7 +1,7 @@
 Begin3
 Title:          LOADLIN, loads Linux with command line from DOS
 Version:        1.6e
-Entered-date:   26JAN09
+Entered-date:   25AUG10
 Description:    This is a boot loader for Linux that runs under MSDOS.
                 It can boot Linux from a DOS prompt or CONFIG.SYS, and fully
                 supports the command line feature of the Linux kernel.
