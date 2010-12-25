@@ -363,13 +363,16 @@ static int read_pagelist(char *fname)
   PAGELIST->count=i;
   PAGELIST->blocks[bi-1].tcount=i-PAGELIST->blocks[bi-1].start;
   PAGELIST->auxbuf=(void *)0x10000000;
+  fclose(f);
 }
 
 int main(int argc, char** argv)
 {
   read_pagelist(argv[1]);
-  printf("count %d nblocks %d\n", PAGELIST->count, PAGELIST->number_of_blocks);
-  if (PAGELIST) adjust();
+  if (PAGELIST) {
+    printf("count %d nblocks %d\n", PAGELIST->count, PAGELIST->number_of_blocks);
+    adjust();
+  }
   return 0;
 }
 
