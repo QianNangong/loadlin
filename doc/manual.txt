@@ -71,7 +71,7 @@ LOADLIN User Guide                                                  96-04-28
       Most Linux-newbees are too impatient to read the very good (but also
       long) documentation of LILO (the standard Linux loader), and start
       using it incorrectly, resulting in an unbootable DOS after this
-      (the MBR gots overwritten, 'fdisk /MBR' not always repairs).
+      (the MBR gets overwritten, 'fdisk /MBR' not always repairs).
       For those impatient ones LOADLIN is the best loader to start with.
 
       LOADLIN needs not to be installed in any way, it is usable as is
