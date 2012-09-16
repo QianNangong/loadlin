@@ -86,7 +86,7 @@ our_stacksize            =     space2k
 kernel_start_ equ     01000h     ; here the kernel must go
 kernel_end    equ     09000h
 standard_setup_sects  equ 4      ; number of setup sectors, older kernels
-maximum_setup_sects   equ (40-1) ; max number of setup sectors for newer kernels
+maximum_setup_sects   equ (48-1) ; max number of setup sectors for newer kernels
 High_Seg_     equ     kernel_end  ; here first 512 + 4*512 + n*512 bytes of image must go
 High_Addr_    equ     (High_Seg_*16)
 
@@ -1643,7 +1643,8 @@ comline_end     label byte
 image_name      db    80 dup(?)
 aux_token       db    80 dup(?)
 rdimage_name    db    80 dup(?)
-command_line    db    space2k dup(?)  ; kernel accepts maximum of 2Kb
+;command_line    db    space2k dup(?)  ; kernel accepts maximum of 2Kb
+command_line    db    360h dup(?)  ; limited to 1Kb to get bigger heap
 
 
   ; -------------------------------v
