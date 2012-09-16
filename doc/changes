@@ -2,6 +2,16 @@
 			=======
 
 
+LOADLIN-16f
+===========
+Recent Linux kernels have grown their setup code, and thus reduced heap size,
+down to not being bootable at all with just 40 setup+heap sectors.  I have
+sacrificed 1K command line out of 2K, to free some room and get 4K more for the
+setup+heap.  Hopefully that will last some time. Otherwise we will have to
+reconsider the lets-fit-in-64KiB rule.
+
+		Sep 17 2012, Samuel Thibault <samuel.thibault@ens-lyon.org>
+
 LOADLIN-16e
 ===========
 
