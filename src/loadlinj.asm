@@ -1018,7 +1018,7 @@ logo_tx               label byte
 IFDEF ALPHA
   INCLUDE LOADLINA.ASM
 ENDIF
-                      db   'LOADLIN v',LOADLIN_VERSION,' (C) 1994..2002 Hans Lermen <lermen@fgan.de>',13,10,'$'
+                      db   'LOADLIN v',LOADLIN_VERSION,' (C) 1994..2002 Hans Lermen <lermen@fgan.de>',13,10
                       db   '              (C) 2008..2010 Samuel Thibault <samuel.thibault@ens-lyon.org>',13,10,'$'
 comspec_tx            db   'comspec',0
 windows_tx            db   'windir',0
@@ -1092,4 +1092,3 @@ usage_tx  db  13,10
 empty_tx  db  '$'
 
 
-

@@ -199,6 +199,7 @@ LOADLIN User Guide                                                  96-04-28
 
       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       LOADLIN v1.6 (C) 1994..1996 Hans Lermen <lermen@elserv.ffm.fgan.de>
+                   (C) 2008..2010 Samuel Thibault (samuel.thibault@ens-lyon.org)
 
       USAGE:
         LOADLIN @params
@@ -848,4 +849,3 @@ LOADLIN User Guide                                                  96-04-28
 
                          --------- END --------
 
-
