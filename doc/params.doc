@@ -14,9 +14,7 @@ I only edited a few new things into it.
 A much better list of boot parameters can be found in Paul Gortmakers
 BootPrompt-HOWTO, which can be accessed via WWW:
 
-    http://sunsite.unc.edu/mdw/HOWTO/BootPrompt-HOWTO.html
-or
-    http://rsphy1.anu.edu/~gpg109/BootPrompt-HOWTO.html
+    http://www.tldp.org/HOWTO/BootPrompt-HOWTO.html
 
 ------------------------------------------------------------------------
 
@@ -384,4 +382,3 @@ Parameter for IDE-style CD-ROM device driver (Kotobuki/Matsushita/Panasonic):
 
 
 ------------------------------------------------------------------------------
-

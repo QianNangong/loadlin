@@ -1087,8 +1087,7 @@ usage_tx  db  13,10
           db  '                 contains /linuxrc, execute it, and then remount to root=xxx.',13,10
           db  '                 If root=/dev/ram, just load, bypass execution of /linuxrc',13,10,13,10
           db  '    for more boot params see PARAMS.TXT or Paul Gortmakers HOWTO:',13,10
-          db  '      http://sunsite.unc.edu/mdw/HOWTO/BootPrompt-HOWTO.html',13,10
-          db  '      http://rsphy1.anu.edu/~gpg109/BootPrompt-HOWTO.html',13,10
+          db  '      http://www.tldp.org/HOWTO/BootPrompt-HOWTO.html',13,10
 empty_tx  db  '$'
 
 

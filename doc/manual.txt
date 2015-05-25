@@ -178,9 +178,7 @@ LOADLIN User Guide                                                  96-04-28
       A much better list of boot parameters can be found in Paul Gortmakers
       BootPrompt-HOWTO, which can be access by WWW:
 
-          http://sunsite.unc.edu/mdw/HOWTO/BootPrompt-HOWTO.html
-      or
-          http://rsphy1.anu.edu/~gpg109/BootPrompt-HOWTO.html
+          http://www.tldp.org/HOWTO/BootPrompt-HOWTO.html
 
 
 3.2.2 Quick help
@@ -233,8 +231,7 @@ LOADLIN User Guide                                                  96-04-28
                        If root=/dev/ram, just load, bypass execution of /linuxrc
 
           for more boot params see PARAMS.TXT or Paul Gortmakers HOWTO:
-            http://sunsite.unc.edu/mdw/HOWTO/BootPrompt-HOWTO.html
-            http://rsphy1.anu.edu/~gpg109/BootPrompt-HOWTO.html
+            http://www.tldp.org/HOWTO/BootPrompt-HOWTO.html
 
       Your current DOS/CPU configuration is:
         load buffer size: 0x0082D000 VCPI, setup buffer size:  0x3E00 (reloc setup)
