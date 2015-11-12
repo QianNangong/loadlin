@@ -782,12 +782,18 @@ print_verbose proc near
          cmp      high_mem_access,0
          jz       @@mmt23
          @@print  @@t22low
-         mov      eax,heap_end
-         sub      eax,heap_ptr
+         mov      eax,heap_ptr
          call   writehexdword
          @@print  @@t22low2
+         mov      eax,heap_end
+         call   writehexdword
 @@mmt23:
          @@print  @@t22
+         mov      es,PSP_frame
+         movzx    eax,es:PSP_memend_frame
+         shl      eax,4
+         call   writehexdword
+         @@print  @@t23
          call   get_effective_physmem
          call   writehexdword
 
@@ -916,8 +922,9 @@ ENDIF
 @@t21_   db               ', setup buffer size:  0x$'
 @@t21_oc db                                              ' (reloc setup)$'
 @@t22low db         13,10,'  lowmem buffer:    0x$'
-@@t22low2 db                                     ' (part of load buffer)$'
-@@t22    db         13,10,'  total memory:     0x$'
+@@t22low2 db                                      '-0x$'
+@@t22    db         13,10,'  limit:            0x$'
+@@t23    db         13,10,'  total memory:     0x$'
 @@t5     db         13,10,'  CPU is in $'
 @@t6     db                               ',  BIOSINTV.SYS:   $'
 @@t6_    db                               ',  REALBIOS:       $'

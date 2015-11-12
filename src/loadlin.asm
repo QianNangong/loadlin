@@ -821,8 +821,9 @@ ENDIF
                  ; if we later detect an older setup-version,
                  ; we must give up, jumping to "err_uppermem".
         neg      ax
+        sub      ax,1
         add      High_Seg,ax
-        and      High_Seg,0ff00h  ; allign on next lower page boundary
+        and      High_Seg,0ff00h  ; align on next lower page boundary
                                   ; (need this for the pagetables)
         call     relocate_setup_code
 start_3:
