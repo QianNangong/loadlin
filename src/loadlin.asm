@@ -330,7 +330,6 @@ option_t_forced db    0
 option_realbios db    0
 option_rx       db    0
 option_ja       db    0
-option_clone    db    0
 option_oldxd    db    0
 option_n        db    0
 option_nodiskprompt db 0
@@ -673,21 +672,9 @@ cpu_check proc near
         pop     ax
         and     ah,030h
         jne     is_v86
-        cmp     option_clone,0
-        jnz     @@clone
-        .386p
-        mov     eax,cr0        ; normally this would cause a GP(0)-exception
-                               ; (i386 Programmers Reference Guide, INTEL 1987)
-                               ; if in V86-mode, but most EMMXXXX drivers
-                               ; seem to intercept this exception and allow
-                               ; reading the CR0.
-        .386
-        or      eax,eax
+        smsw    ax
+        or      ax,ax
         jz      is_v86         ; not a valid CR0, reserved bits are allways set
-                               ; (this may be not true on a 486 clone such as
-                               ;  the 486DLC, so if you have trouble with
-                               ;  interpreting real mode as V86 use the -clone switch
-                               ;
         test    al,01h         ; test PE -bit
         jz      is_greater_equal_80386
 is_v86:
@@ -713,27 +700,6 @@ is_force_386GE:
 is_386_real_pageing:
         mov     ax,cpu_386GE_real_paging
         jmp     cpu_check_exit
-
-@@clone:                 ; on some 486 clones we have problems with CR0,
-                         ; so we are looking for EMM, and then
-                         ; we assume to be in V86, if we have EMM.
-        push    ds
-        xor     ax,ax
-        mov     ds,ax
-        mov     ds,word ptr ds:[emm_int*4+2]
-        mov     ax,cpu_386V86
-        cmp     dword ptr ds:[10+4],'0XXX'
-        jne     @@cl1
-        cmp     dword ptr ds:[10],'QMME'
-        je      @@clex
-        cmp     dword ptr ds:[10],'XMME'
-        je      @@clex
-@@cl1:
-        mov     ax,cpu_386GE
-@@clex:
-        pop     ds
-        jmp     cpu_check_exit
-
 cpu_check endp
 
 ;=============================================================================
@@ -841,7 +807,6 @@ start_9:
         mov      token_count,-1
                  ; check if we are on the right CPU
         mov      cpu_check_status,0
-        mov      option_clone,1  ; avoid reading CR0 before parsing -clone
         call     cpu_check
         lea      dx,err_wrong_cpu_tx
         cmp      ax,cpu_386V86
@@ -855,7 +820,6 @@ start_9:
         call     tolower
 m2:
         call     parscommandline
-        call     cpu_check    ; do it once more, because of option_clone
 
         mov      cpu_check_status,2
         call     get_default_bios_intvectors

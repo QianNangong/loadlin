@@ -211,7 +211,6 @@ LOADLIN User Guide                                                  96-04-28
              -v        verbose, show information on params and configuration
              -t        test mode, do all but starting Linux, also sets -v
              -d file   debug mode, same as -t, but duplicates output to "file"
-             -clone    ( Please read MANUAL.TXT before using this switch! )
              -n        no translation for root=/dev/...
              -txmode   switch to textmode 80x25 on startup
              -noheap   disable use of setup heap
@@ -665,27 +664,6 @@ LOADLIN User Guide                                                  96-04-28
       LOADLIN can produce information for me (and for you) if you use
       the -d or -t switch.
 
-
-
-5.1   Problems detecting V86
-      ----------------------
-
-      On some 486 clones we have problems with CR0 while probing for V86 mode.
-      (as reported by Jacek Zapala zapala@if.pw.edu.pl ).
-      It can happen that the CPU is in realmode, but PAGING is enabled !
-      This is possible, but neither documented nor supported by INTEL.
-      May be the motherboard's BIOS is mapping shadow ram this way,
-      or one of those old and strange EMM managers is used,
-      but probably this is an indication of a not exactly compatible
-      486 clone. The -clone switch byepasses the CR0 check and assumes
-      V86 if an EMM manger is found.
-      But of course this EMM manager must not use real paging !
-
-      On the other hand, if LOADLIN detects V86 _and_ you are sure that the
-      machine is in _real_ realmode, then you may use the -f switch
-      in order to force LOADLIN to 'detect' realmode.
-      NOTE: This option intentionaly is not mentioned elsewere, because
-      it realy is dangerous.
 
 
 5.2.  Description of debug output (-v,-t,-d)

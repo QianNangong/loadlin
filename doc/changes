@@ -2,6 +2,14 @@
 			=======
 
 
+LOADLIN-16g
+===========
+Use unprivileged SMSW instead of MOV to load CR0 which poses various issues.
+Remove the -clone option accordingly.
+Thanks Peter Anvin for the notice.
+
+		Jul 16 2018, Samuel Thibault <samuel.thibault@ens-lyon.org>
+
 LOADLIN-16f
 ===========
 Recent Linux kernels have grown their setup code, and thus reduced heap size,

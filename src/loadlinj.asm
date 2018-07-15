@@ -957,8 +957,7 @@ ENDIF
          db     "  May be your motherboard's BIOS is mapping shadow ram this way,",13,10
          db     '  or you are using one of those old and strange EMM managers,',13,10
          db     '  but probably this is an indication of a not exactly compatible',13,10
-         db     '  486 clone. If you are not using one of the older EMM-managers',13,10
-         db     '  you better should use the -clone switch to work around.',13,10,'$'
+         db     '  486 clone.',13,10,'$'
 @@w2     db     'WARNING: Not enough free memory (load buffer size)$',13,10
 @@w3     db     'WARNING: The setup buffer of LOADLIN is too small (must recompile)$',13,10
 @@w4     db     'WARNING: Option -f set, CPU-Check bypassed !$',13,10
@@ -1075,7 +1074,6 @@ usage_tx  db  13,10
           db  '       -v        verbose, show information on params and configuration',13,10
           db  '       -t        test mode, do all but starting Linux, also sets -v',13,10
           db  '       -d file   debug mode, same as -t, but duplicates output to "file"',13,10
-          db  "       -clone    ( Please read MANUAL.TXT before using this switch! )",13,10
           db  "       -n        no translation for root=/dev/...",13,10
           db  "       -txmode   switch to textmode 80x25 on startup",13,10
           db  "       -noheap   disable use of setup heap",13,10

@@ -487,7 +487,6 @@ parscommandline_:
               db    '-rb',0
               db    '-rx',0
               db    '-ja',0
-              db    '-clone',0
 ;              db    '-oldxd',0
               db    'debug',0
               db    'no-hlt',0
@@ -521,7 +520,6 @@ parscommandline_:
               dw  @@option_realbios
               dw  @@option_rx
               dw  @@option_ja
-              dw  @@option_clone
 ;              dw  @@option_oldxd
               dw  @@tolower  ; debug
               dw  @@tolower  ; no-hlt
@@ -666,10 +664,6 @@ parscommandline_:
         jmp     @@next_token
 @@option_ja:
         mov     option_ja,1
-        jmp     @@next_token
-@@option_clone:
-        mov     option_clone,1
-        dec     token_count
         jmp     @@next_token
 @@option_n:
         mov     option_n,1
