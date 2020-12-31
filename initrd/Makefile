@@ -3,14 +3,13 @@ CFLAGS = -O2  -fomit-frame-pointer
 
 all: initdisk freeramdisk Makefile
 
-linuxrc: linuxrc.c
-	$(CC) $(CFLAGS) -static -o linuxrc linuxrc.c
+linuxrc: linuxrc.o
+linuxrc: LDFLAGS+=-static
 
 initdisk: linuxrc Makefile freeramdisk mkdisk
 	./mkdisk linuxrc
 
-freeramdisk: freeramdisk.c
-	$(CC) $(CFLAGS) -o freeramdisk freeramdisk.c
+freeramdisk: freeramdisk.o
 
 clean:
 	rm -f hello initdisk freeramdisk *~ *.o linuxrc
