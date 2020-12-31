@@ -25,17 +25,18 @@ pgadjust.out: pgadjust Makefile
 #	objdump -k -q  -o $(IMAGE_OFFSET) pgadjust > pgadjust.out
 	
 loadlinh.o: loadlinh.S
-	$(CC) -traditional -c loadlinh.S
+	$(CC) $(CPPFLAGS) -traditional -c loadlinh.S
 
 pgadjust: $(OBJECTS) Makefile
 	ld -m elf_i386 -Ttext $(IMAGE_OFFSET) -N -e startup_32  -o pgadjust $(OBJECTS)
 #                      this avoids page align ^^ (and holes between sections)
 
 pgadjust.o: pgadjust.c
-	$(CC) $(CFLAGS) -c pgadjust.c -o pgadjust.o
+	echo blhc: ignore-line-regexp: .*-fno-stack-protector.*
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c pgadjust.c -o pgadjust.o
 
 testpg: pgadjust.c
-	$(CC) $(CFLAGS) -DSTANDALONE_DEBUG -o testpg pgadjust.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -DSTANDALONE_DEBUG -o testpg pgadjust.c
 
 clean:
 	rm -f $(OBJECTS) ../pgadjust.asm pgadjust.out pgadjust
