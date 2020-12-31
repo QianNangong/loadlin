@@ -6,10 +6,10 @@ SYS_SIZE = -DSYS_SIZE=0xFFFF
 
 OBJECTS = $(HEAD) pgadjust.o
 
-CFLAGS = -D__KERNEL__ -march=i386 -Os -DSTDC_HEADERS -fomit-frame-pointer \
+CFLAGS += -D__KERNEL__ -march=i386 -Os -DSTDC_HEADERS -fomit-frame-pointer \
          -fno-strength-reduce -fPIC -ffreestanding -fno-stack-protector
 
-CC=gcc -m32
+CC?=gcc -m32
 
 all: ../pgadjust.asm Makefile
 #all: testpg Makefile

@@ -1,5 +1,6 @@
-CC = gcc
-CFLAGS = -O2  -fomit-frame-pointer
+CC ?= gcc
+CFLAGS ?= -O2
+CFLAGS += -fomit-frame-pointer
 
 all: initdisk freeramdisk Makefile
 
